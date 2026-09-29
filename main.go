@@ -1,11 +1,10 @@
 package main
 
 import (
-	"github.com/shravan26/serverhost/registry"
 	"log"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
+
+	"github.com/shravan26/serverhost/registry"
 )
 
 func loggingMiddleWare(next http.Handler) http.Handler {
@@ -20,15 +19,16 @@ func loggingMiddleWare(next http.Handler) http.Handler {
 	})
 }
 func main() {
-	target, err := registry.RouteTo()
-	if err != nil {
-		log.Fatal(err)
-	}
-	proxy := httputil.NewSingleHostReverseProxy(target)
-	server := loggingMiddleWare(proxy)
+	server := NewServer()
+	server.registry.Register("api", registry.ServiceInstance{
+		Host: "localhost",
+		Port: "9000",
+	})
+	target := server.RouteTo()
+	actedRequest := loggingMiddleWare(target)
 	log.Println("MiniCloud server running on :8080")
 
-	err = http.ListenAndServe("0.0.0.0:8080", server)
+	err := http.ListenAndServe("0.0.0.0:8080", actedRequest)
 	if err != nil {
 		log.Fatal(err)
 	}
