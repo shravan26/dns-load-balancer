@@ -35,7 +35,9 @@ func (s *Server) RouteTo() http.Handler {
 		}
 		forwardPath := strings.Join(parts[1:], "/")
 		reconstructUrl(r, serviceInstances, forwardPath)
-		target, err := url.Parse(r.URL.String())
+		target, err := url.Parse(
+			r.URL.Scheme + "://" + r.URL.Host,
+		)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadGateway)
 			return
