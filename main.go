@@ -20,10 +20,16 @@ func loggingMiddleWare(next http.Handler) http.Handler {
 }
 func main() {
 	server := NewServer()
-	server.registry.Register("api", registry.ServiceInstance{
+	server.registry.Register("api", []registry.ServiceInstance{{
 		Host: "localhost",
 		Port: "9000",
-	})
+	}, {
+		Host: "localhost",
+		Port: "9001",
+	}, {
+		Host: "localhost",
+		Port: "9002",
+	}})
 	target := server.RouteTo()
 	actedRequest := loggingMiddleWare(target)
 	log.Println("MiniCloud server running on :8080")
